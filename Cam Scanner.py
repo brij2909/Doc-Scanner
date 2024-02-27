@@ -85,15 +85,16 @@ def reorder(h):
 
     hnew = np.zeros((4, 2), dtype=np.float32)
 
-    add = h.sum(axis=1)  # Calculate along columns (axis=0)
+    add = h.sum(axis=1)  # Calculate along rows (axis=1)
     hnew[3] = h[np.argmin(add)]
     hnew[1] = h[np.argmax(add)]
 
-    diff = np.diff(h, axis=1)  # Calculate along columns (axis=0)
-    hnew[0] = h[np.argmin(diff)]
-    hnew[2] = h[np.argmax(diff)]
+    diff = np.diff(h, axis=1)  # Calculate along columns (axis=1)
+    hnew[2] = h[np.argmin(diff)]
+    hnew[0] = h[np.argmax(diff)]
 
     return hnew
+
 
 reordered = reorder(target)
 print("_-_-_-_-_-_-_-_-_-_")
