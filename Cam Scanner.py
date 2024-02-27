@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import cv2
 
 # Path to the image file
-image_path = "C:\\Users\\Dell\\Desktop\\AI\\Machine Learning\\Cam Scanner\\OIP.jpg"
+image_path = "C:\\Users\\Dell\\Desktop\\AI\\Machine Learning\\Cam Scanner\\img.jpg"
 
 # Read image from path
 img = cv2.imread(image_path)
@@ -14,7 +14,7 @@ print(img.shape)
 
 #image resize
 
-img = cv2.resize(img, (800, 800))
+img = cv2.resize(img, (800, 1200))
 # BGR format : BGR -> RGB
 print(img.shape)
 plt.imshow(img)
@@ -32,11 +32,11 @@ plt.show()
 
 original = img.copy()
 gray = cv2.cvtColor(original, cv2.COLOR_BGR2GRAY)
-plt.imshow(gray, cmap = "binary")
+plt.imshow(gray)
 plt.show()
 
-blurred = cv2.GaussianBlur(gray, (5, 5), 0)
-plt.imshow(blurred, cmap = "binary")
+blurred = cv2.GaussianBlur(gray, (5,5), 0)
+plt.imshow(blurred)
 plt.show()
 
 # Regeneration of image
@@ -64,21 +64,20 @@ plt.show()
 contours, _ = cv2.findContours(edge, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
 print(len(contours))
 
-contours = sorted( contours, reverse = True, key = cv2.contourArea )
-
+contours = sorted(contours, reverse = True, key = cv2.contourArea)
+ 
 # 4 Select the Best Contour Region
 
 for c in contours:
     p = cv2.arcLength(c, True)
 
-    approx = cv2.approxPolyDP(c, 0.01*p, True)
+    approx = cv2.approxPolyDP(c, 0.02*p, True)
 
     if len(approx) == 4:
         target = approx
         break
 print(target.shape)
-
-# Reorder Target Contour
+ # Reorder Target Contour
 
 def reorder(h):
     h = h.reshape((4, 2))
@@ -86,12 +85,12 @@ def reorder(h):
 
     hnew = np.zeros((4, 2), dtype=np.float32)
 
-    add = h.sum(axis=0)  # Calculate along columns (axis=0)
-    hnew[3] = h[np.argmax(add)]
+    add = h.sum(axis=1)  # Calculate along columns (axis=0)
+    hnew[3] = h[np.argmin(add)]
     hnew[1] = h[np.argmax(add)]
 
-    diff = np.diff(h, axis=0)  # Calculate along columns (axis=0)
-    hnew[0] = h[np.argmax(diff)]
+    diff = np.diff(h, axis=1)  # Calculate along columns (axis=0)
+    hnew[0] = h[np.argmin(diff)]
     hnew[2] = h[np.argmax(diff)]
 
     return hnew
@@ -102,7 +101,7 @@ print(reordered)
 
 # 5 Project to a fixed screen
 
-input_representation = reordered.astype(np.float32)  # Ensure input is float32
+input_representation = reordered
 output_map = np.float32([[0, 0], [800, 0], [800, 800], [0, 800]])
 
 M = cv2.getPerspectiveTransform(input_representation, output_map)
@@ -110,4 +109,8 @@ M = cv2.getPerspectiveTransform(input_representation, output_map)
 ans = cv2.warpPerspective(original, M, (800, 800))
 
 plt.imshow(ans)
+try:
+    print('my code is all done')
+except: 
+    print('something wrong')
 plt.show()
